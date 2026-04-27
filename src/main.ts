@@ -14,40 +14,6 @@ const state: AppState = {
   jsonOutput: ''
 };
 
-// 鼠标跟随光效
-let mouseTrail: HTMLDivElement | null = null;
-
-function initMouseTrail() {
-  mouseTrail = document.createElement('div');
-  mouseTrail.className = 'mouse-trail';
-  mouseTrail.style.opacity = '0';
-  document.body.appendChild(mouseTrail);
-
-  let rafId: number;
-
-  document.addEventListener('mousemove', (e) => {
-    if (!mouseTrail) return;
-
-    const { clientX, clientY } = e;
-
-    // 平滑跟随
-    cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(() => {
-      if (mouseTrail) {
-        mouseTrail.style.left = clientX + 'px';
-        mouseTrail.style.top = clientY + 'px';
-        mouseTrail.style.opacity = '1';
-      }
-    });
-  });
-
-  document.addEventListener('mouseleave', () => {
-    if (mouseTrail) {
-      mouseTrail.style.opacity = '0';
-    }
-  });
-}
-
 // 文件读取工具
 async function readFileAsText(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -394,6 +360,5 @@ function render() {
 
 // 初始化
 export function initApp() {
-  initMouseTrail();
   render();
 }

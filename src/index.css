@@ -86,19 +86,6 @@ body {
   50% { transform: translateY(-30px) scale(1.5); opacity: 0.8; }
 }
 
-/* 鼠标跟随光效 */
-.mouse-trail {
-  position: fixed;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, transparent 70%);
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  transition: opacity 0.3s ease;
-  z-index: 100;
-}
-
 /* 连接线 */
 .connection-lines {
   position: absolute;
