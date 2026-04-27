@@ -470,8 +470,7 @@ body {
   background: rgba(36, 36, 36, 0.8);
   border-top: 1px solid var(--border-color);
   display: flex;
-  justify-content: center;
-  gap: 1rem;
+  justify-content: space-between;
   flex-shrink: 0;
 }
 
