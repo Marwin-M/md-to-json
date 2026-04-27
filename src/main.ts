@@ -23,8 +23,6 @@ function initMouseTrail() {
   mouseTrail.style.opacity = '0';
   document.body.appendChild(mouseTrail);
 
-  let lastX = 0;
-  let lastY = 0;
   let rafId: number;
 
   document.addEventListener('mousemove', (e) => {
@@ -41,9 +39,6 @@ function initMouseTrail() {
         mouseTrail.style.opacity = '1';
       }
     });
-
-    lastX = clientX;
-    lastY = clientY;
   });
 
   document.addEventListener('mouseleave', () => {
@@ -150,7 +145,7 @@ function downloadJson() {
 // 渲染科技感背景
 function renderTechBackground() {
   // 生成100个粒子，随机位置和动画参数
-  const particles = Array.from({ length: 100 }, (_, i) => {
+  const particles = Array.from({ length: 100 }, () => {
     const left = Math.random() * 100;
     const top = Math.random() * 100;
     const delay = Math.random() * 5;
