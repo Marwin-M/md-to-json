@@ -14,6 +14,9 @@ const state: AppState = {
   jsonOutput: ''
 };
 
+const MAX_FILE_SIZE = 1024 * 1024; // 1MB
+const MAX_FILE_COUNT = 100;
+
 // 文件读取工具
 async function readFileAsText(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -32,6 +35,20 @@ async function handleFileUpload(files: FileList | null) {
 
   if (mdFiles.length === 0) {
     alert('请上传 .md 文件');
+    return;
+  }
+
+  // 过滤超过 1M 的文件
+  const oversizedFiles = mdFiles.filter(f => f.size > MAX_FILE_SIZE);
+  if (oversizedFiles.length > 0) {
+    alert(`以下文件超过 1MB：${oversizedFiles.map(f => f.name).join(', ')}`);
+    return;
+  }
+
+  // 检查文件数量限制
+  const newFilesCount = mdFiles.filter(f => !state.files.some(existing => existing.name === f.name)).length;
+  if (state.files.length + newFilesCount > MAX_FILE_COUNT) {
+    alert(`文件数量不能超过 ${MAX_FILE_COUNT} 个`);
     return;
   }
 
