@@ -149,6 +149,16 @@ function downloadJson() {
 
 // 渲染科技感背景
 function renderTechBackground() {
+  // 生成100个粒子，随机位置和动画参数
+  const particles = Array.from({ length: 100 }, (_, i) => {
+    const left = Math.random() * 100;
+    const top = Math.random() * 100;
+    const delay = Math.random() * 5;
+    const duration = 6 + Math.random() * 6;
+    const size = 2 + Math.random() * 2;
+    return `<div class="particle" style="left: ${left}%; top: ${top}%; animation-delay: ${delay}s; animation-duration: ${duration}s; width: ${size}px; height: ${size}px;"></div>`;
+  }).join('');
+
   return `
     <div class="tech-bg">
       <div class="grid-lines"></div>
@@ -160,7 +170,7 @@ function renderTechBackground() {
         <div class="connection-line"></div>
       </div>
       <div class="particles">
-        ${Array.from({ length: 10 }, () => '<div class="particle"></div>').join('')}
+        ${particles}
       </div>
       <div class="scan-line"></div>
     </div>
@@ -251,8 +261,25 @@ function render() {
 
     <div class="container">
       <header class="header">
-        <h1>MD 转 JSON</h1>
-        <p class="subtitle">机型数据转换工具</p>
+        <div class="header-content">
+          <div class="header-text">
+            <h1>MD 转 JSON</h1>
+            <p class="subtitle">机型数据转换工具</p>
+          </div>
+          <a
+            href="https://github.com/matomo-org/device-detector?utm_source=chatgpt.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-source"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            MD 获取
+          </a>
+        </div>
       </header>
 
       <main class="main-content">

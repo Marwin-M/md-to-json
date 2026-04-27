@@ -81,17 +81,6 @@ body {
   opacity: 0.6;
 }
 
-.particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; animation-duration: 8s; }
-.particle:nth-child(2) { left: 20%; top: 60%; animation-delay: 1s; animation-duration: 10s; }
-.particle:nth-child(3) { left: 30%; top: 30%; animation-delay: 2s; animation-duration: 7s; }
-.particle:nth-child(4) { left: 50%; top: 70%; animation-delay: 0.5s; animation-duration: 9s; }
-.particle:nth-child(5) { left: 60%; top: 40%; animation-delay: 1.5s; animation-duration: 11s; }
-.particle:nth-child(6) { left: 75%; top: 25%; animation-delay: 2.5s; animation-duration: 8s; }
-.particle:nth-child(7) { left: 85%; top: 55%; animation-delay: 3s; animation-duration: 10s; }
-.particle:nth-child(8) { left: 90%; top: 80%; animation-delay: 0.8s; animation-duration: 9s; }
-.particle:nth-child(9) { left: 40%; top: 15%; animation-delay: 1.2s; animation-duration: 12s; }
-.particle:nth-child(10) { left: 65%; top: 85%; animation-delay: 2.8s; animation-duration: 7s; }
-
 @keyframes float {
   0%, 100% { transform: translateY(0) scale(1); opacity: 0.4; }
   50% { transform: translateY(-30px) scale(1.5); opacity: 0.8; }
@@ -99,11 +88,11 @@ body {
 
 /* 鼠标跟随光效 */
 .mouse-trail {
-  position: absolute;
-  width: 200px;
-  height: 200px;
+  position: fixed;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, transparent 70%);
   pointer-events: none;
   transform: translate(-50%, -50%);
   transition: opacity 0.3s ease;
@@ -136,19 +125,55 @@ body {
   50% { opacity: 0.4; transform: scaleX(1); }
 }
 
-/* 扫描线 */
+/* 扫描线 - 带拖影效果 */
 .scan-line {
   position: absolute;
   width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--neon-yellow), transparent);
+  height: 100px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 215, 0, 0.1) 20%,
+    rgba(255, 215, 0, 0.3) 40%,
+    rgba(255, 215, 0, 0.6) 50%,
+    rgba(255, 215, 0, 0.3) 60%,
+    rgba(255, 215, 0, 0.1) 80%,
+    transparent 100%
+  );
   animation: scan 4s linear infinite;
-  opacity: 0.3;
+  opacity: 0.4;
+  filter: blur(2px);
 }
 
 @keyframes scan {
-  0% { top: -2px; }
-  100% { top: 100%; }
+  0% { transform: translateY(-100px); }
+  100% { transform: translateY(calc(100vh + 100px)); }
+}
+
+/* 扫描线拖影伪元素 */
+.scan-line::before,
+.scan-line::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 215, 0, 0.15),
+    transparent
+  );
+  left: 0;
+}
+
+.scan-line::before {
+  top: -30px;
+  filter: blur(8px);
+}
+
+.scan-line::after {
+  bottom: -30px;
+  filter: blur(8px);
 }
 
 /* 主容器 */
@@ -164,9 +189,20 @@ body {
 
 /* Header */
 .header {
-  text-align: center;
   padding: 0.5rem 0 1rem;
   flex-shrink: 0;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-text {
+  text-align: left;
 }
 
 .header h1 {
@@ -181,6 +217,34 @@ body {
   color: var(--text-secondary);
   font-size: 0.8rem;
   margin-top: 0.25rem;
+}
+
+/* MD 获取按钮 */
+.btn-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--neon-yellow);
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-source svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-source:hover {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: var(--neon-yellow);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  transform: translateY(-1px);
 }
 
 /* Main Content - 左右布局 */
