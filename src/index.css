@@ -468,12 +468,11 @@ body {
 
 /* 底部操作栏 */
 .action-bar {
-  margin-top: 1rem;
+  margin: 1rem 0;
   padding: 1rem;
   background: rgba(26, 26, 26, 0.85);
   backdrop-filter: blur(10px);
   border-radius: 12px;
-  border: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   flex-shrink: 0;
@@ -579,8 +578,9 @@ body {
 
   .header {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     gap: 0.5rem;
     padding: 0.25rem 0 0.5rem;
   }
@@ -591,7 +591,6 @@ body {
 
   .header-actions {
     padding-right: 0;
-    width: 100%;
   }
 
   .header h1 {
