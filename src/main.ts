@@ -14,6 +14,45 @@ const state: AppState = {
   jsonOutput: ''
 };
 
+// 鼠标跟随光效
+let mouseTrail: HTMLDivElement | null = null;
+
+function initMouseTrail() {
+  mouseTrail = document.createElement('div');
+  mouseTrail.className = 'mouse-trail';
+  mouseTrail.style.opacity = '0';
+  document.body.appendChild(mouseTrail);
+
+  let lastX = 0;
+  let lastY = 0;
+  let rafId: number;
+
+  document.addEventListener('mousemove', (e) => {
+    if (!mouseTrail) return;
+
+    const { clientX, clientY } = e;
+
+    // 平滑跟随
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      if (mouseTrail) {
+        mouseTrail.style.left = clientX + 'px';
+        mouseTrail.style.top = clientY + 'px';
+        mouseTrail.style.opacity = '1';
+      }
+    });
+
+    lastX = clientX;
+    lastY = clientY;
+  });
+
+  document.addEventListener('mouseleave', () => {
+    if (mouseTrail) {
+      mouseTrail.style.opacity = '0';
+    }
+  });
+}
+
 // 文件读取工具
 async function readFileAsText(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -108,6 +147,26 @@ function downloadJson() {
   URL.revokeObjectURL(url);
 }
 
+// 渲染科技感背景
+function renderTechBackground() {
+  return `
+    <div class="tech-bg">
+      <div class="grid-lines"></div>
+      <div class="connection-lines">
+        <div class="connection-line"></div>
+        <div class="connection-line"></div>
+        <div class="connection-line"></div>
+        <div class="connection-line"></div>
+        <div class="connection-line"></div>
+      </div>
+      <div class="particles">
+        ${Array.from({ length: 10 }, () => '<div class="particle"></div>').join('')}
+      </div>
+      <div class="scan-line"></div>
+    </div>
+  `;
+}
+
 // 渲染文件列表
 function renderFileList() {
   if (state.files.length === 0) {
@@ -188,6 +247,8 @@ function render() {
   if (!app) return;
 
   app.innerHTML = `
+    ${renderTechBackground()}
+
     <div class="container">
       <header class="header">
         <h1>MD 转 JSON</h1>
@@ -283,7 +344,7 @@ function render() {
       </div>
 
       <footer class="footer">
-        支持格式：型号代码: 名称
+        <span>博远软件内部工具</span>
       </footer>
     </div>
   `;
@@ -312,5 +373,6 @@ function render() {
 
 // 初始化
 export function initApp() {
+  initMouseTrail();
   render();
 }
