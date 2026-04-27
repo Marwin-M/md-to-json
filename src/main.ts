@@ -37,7 +37,6 @@ async function handleFileUpload(files: FileList | null) {
 
   for (const file of mdFiles) {
     const content = await readFileAsText(file);
-    // 检查是否已存在同名文件
     const existingIndex = state.files.findIndex(f => f.name === file.name);
     if (existingIndex >= 0) {
       state.files[existingIndex] = { name: file.name, content };
@@ -46,10 +45,8 @@ async function handleFileUpload(files: FileList | null) {
     }
   }
 
-  // 重新解析所有文件
   state.models = parseMultipleMdFiles(state.files);
   state.jsonOutput = toJson(state.models);
-
   render();
 }
 
@@ -57,12 +54,9 @@ async function handleFileUpload(files: FileList | null) {
 async function handleDrop(e: DragEvent) {
   e.preventDefault();
   e.stopPropagation();
-
   const dropZone = document.getElementById('drop-zone');
   dropZone?.classList.remove('drag-over');
-
-  const files = e.dataTransfer?.files ?? null;
-  await handleFileUpload(files);
+  await handleFileUpload(e.dataTransfer?.files ?? null);
 }
 
 // 处理拖放悬停效果
@@ -114,35 +108,10 @@ function downloadJson() {
   URL.revokeObjectURL(url);
 }
 
-// 渲染统计信息
-function renderStats() {
-  const statsHtml = `
-    <div class="stats">
-      <div class="stat-item">
-        <span class="stat-value">${state.files.length}</span>
-        <span class="stat-label">已上传文件</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">${state.models.length}</span>
-        <span class="stat-label">解析到机型</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">${new Set(state.models.map(m => m.brand)).size}</span>
-        <span class="stat-label">品牌数量</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">${new Set(state.models.map(m => m.series)).size}</span>
-        <span class="stat-label">系列数量</span>
-      </div>
-    </div>
-  `;
-  return statsHtml;
-}
-
 // 渲染文件列表
 function renderFileList() {
   if (state.files.length === 0) {
-    return '<div class="empty-hint">尚未上传任何文件</div>';
+    return '';
   }
 
   return `
@@ -150,7 +119,7 @@ function renderFileList() {
       ${state.files.map((file, index) => `
         <div class="file-item">
           <div class="file-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
             </svg>
@@ -160,7 +129,7 @@ function renderFileList() {
             <div class="file-size">${file.content.length} 字符</div>
           </div>
           <button class="btn-remove" onclick="window.removeFile(${index})" title="移除">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -171,20 +140,6 @@ function renderFileList() {
   `;
 }
 
-// 渲染 JSON 预览
-function renderJsonPreview() {
-  if (!state.jsonOutput) {
-    return '<div class="empty-hint">预览区域（上传文件后显示）</div>';
-  }
-
-  // 限制预览长度
-  const preview = state.jsonOutput.length > 2000
-    ? state.jsonOutput.substring(0, 2000) + '\n... (已截断，显示前 2000 字符)'
-    : state.jsonOutput;
-
-  return `<pre class="json-preview">${escapeHtml(preview)}</pre>`;
-}
-
 // HTML 转义
 function escapeHtml(text: string): string {
   const div = document.createElement('div');
@@ -192,42 +147,39 @@ function escapeHtml(text: string): string {
   return div.innerHTML;
 }
 
-// 渲染预览表格
-function renderPreviewTable() {
-  if (state.models.length === 0) {
-    return '<div class="empty-hint">暂无解析数据</div>';
-  }
-
-  // 显示前 10 条
-  const previewModels = state.models.slice(0, 10);
+// 渲染统计信息
+function renderStats() {
+  const brands = new Set(state.models.map(m => m.brand)).size;
+  const series = new Set(state.models.map(m => m.series)).size;
 
   return `
-    <div class="preview-table-wrapper">
-      <table class="preview-table">
-        <thead>
-          <tr>
-            <th>品牌</th>
-            <th>系列</th>
-            <th>型号代码</th>
-            <th>名称</th>
-            <th>别名</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${previewModels.map(model => `
-            <tr>
-              <td>${escapeHtml(model.brand)}</td>
-              <td>${escapeHtml(model.series)}</td>
-              <td><code>${escapeHtml(model.code)}</code></td>
-              <td>${escapeHtml(model.name)}</td>
-              <td>${model.alias ? escapeHtml(model.alias) : '-'}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-      ${state.models.length > 10 ? `<div class="table-footer">共 ${state.models.length} 条记录，仅显示前 10 条</div>` : ''}
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-label">文件:</span>
+        <span class="stat-value">${state.files.length}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">机型:</span>
+        <span class="stat-value">${state.models.length}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">品牌:</span>
+        <span class="stat-value">${brands}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">系列:</span>
+        <span class="stat-value">${series}</span>
+      </div>
     </div>
   `;
+}
+
+// 渲染 JSON 预览
+function renderJsonPreview() {
+  if (!state.jsonOutput) {
+    return '<div class="empty-hint">上传 MD 文件后显示 JSON 输出</div>';
+  }
+  return `<pre class="json-preview">${escapeHtml(state.jsonOutput)}</pre>`;
 }
 
 // 主渲染函数
@@ -238,105 +190,127 @@ function render() {
   app.innerHTML = `
     <div class="container">
       <header class="header">
-        <h1>MD 转 JSON 工具</h1>
-        <p class="subtitle">将机型 MD 文件批量转换为 JSON 数据格式</p>
+        <h1>MD 转 JSON</h1>
+        <p class="subtitle">机型数据转换工具</p>
       </header>
 
-      <main class="main">
-        <section class="upload-section">
-          <div
-            id="drop-zone"
-            class="drop-zone"
-            ondrop="window.handleDrop(event)"
-            ondragover="window.handleDragOver(event)"
-            ondragleave="window.handleDragLeave(event)"
-          >
-            <div class="drop-zone-content">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
+      <main class="main-content">
+        <!-- 左侧：MD 输入 -->
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
               </svg>
-              <p class="drop-text">拖拽 MD 文件到此处</p>
-              <p class="drop-hint">或点击选择文件（支持批量）</p>
-              <input
-                type="file"
-                id="file-input"
-                class="file-input"
-                accept=".md"
-                multiple
-                onchange="window.handleFileInput(event)"
-              />
+              MD 文件输入
             </div>
+            ${state.files.length > 0 ? `
+              <button class="btn-remove" onclick="window.clearAll()" title="清空全部">
+                清空
+              </button>
+            ` : ''}
           </div>
-
-          ${renderStats()}
-          ${renderFileList()}
-
-          ${state.files.length > 0 ? `
-            <div class="action-buttons">
-              <button class="btn btn-secondary" onclick="window.clearAll()">清空全部</button>
+          <div class="panel-body">
+            <div class="upload-area">
+              <div
+                id="drop-zone"
+                class="drop-zone"
+              >
+                <div class="drop-zone-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <p class="drop-text">拖拽 MD 文件到此处</p>
+                  <p class="drop-hint">或点击选择文件（支持批量）</p>
+                </div>
+                <input
+                  type="file"
+                  id="file-input"
+                  class="file-input"
+                  accept=".md"
+                  multiple
+                />
+              </div>
+              ${renderFileList()}
             </div>
-          ` : ''}
-        </section>
-
-        <section class="preview-section">
-          <div class="section-header">
-            <h2>数据预览</h2>
             ${renderStats()}
           </div>
-          ${renderPreviewTable()}
         </section>
 
-        <section class="output-section">
-          <div class="section-header">
-            <h2>JSON 输出</h2>
-            <button
-              class="btn btn-primary"
-              onclick="window.downloadJson()"
-              ${state.models.length === 0 ? 'disabled' : ''}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
+        <!-- 右侧：JSON 输出 -->
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
               </svg>
-              下载 JSON
-            </button>
+              JSON 输出
+            </div>
           </div>
-          ${renderJsonPreview()}
+          <div class="panel-body">
+            <div class="json-output">
+              ${renderJsonPreview()}
+            </div>
+          </div>
         </section>
       </main>
 
+      <!-- 底部操作栏 -->
+      <div class="action-bar">
+        <button
+          class="btn btn-secondary"
+          onclick="window.clearAll()"
+          ${state.files.length === 0 ? 'disabled' : ''}
+        >
+          清空
+        </button>
+        <button
+          class="btn btn-primary"
+          onclick="window.downloadJson()"
+          ${state.models.length === 0 ? 'disabled' : ''}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          下载 JSON
+        </button>
+      </div>
+
       <footer class="footer">
-        <p>支持格式：MD 文件中的 型号代码: 名称 格式</p>
+        支持格式：型号代码: 名称
       </footer>
     </div>
   `;
 
-  // 绑定点击事件
+  // 绑定事件
   const dropZone = document.getElementById('drop-zone');
   const fileInput = document.getElementById('file-input') as HTMLInputElement;
 
-  dropZone?.addEventListener('click', () => {
-    fileInput?.click();
+  dropZone?.addEventListener('click', () => fileInput?.click());
+  dropZone?.addEventListener('drop', (e) => handleDrop(e as DragEvent));
+  dropZone?.addEventListener('dragover', handleDragOver);
+  dropZone?.addEventListener('dragleave', handleDragLeave);
+  fileInput?.addEventListener('change', async (e) => {
+    const input = e.target as HTMLInputElement;
+    await handleFileUpload(input.files);
   });
 }
 
-// 初始化全局函数
-(window as unknown as { [key: string]: unknown }).handleFileInput = async (e: Event) => {
-  const input = e.target as HTMLInputElement;
-  await handleFileUpload(input.files);
-};
-
-(window as unknown as { [key: string]: unknown }).handleDrop = handleDrop;
-(window as unknown as { [key: string]: unknown }).handleDragOver = handleDragOver;
-(window as unknown as { [key: string]: unknown }).handleDragLeave = handleDragLeave;
+// 导出全局函数
 (window as unknown as { [key: string]: unknown }).removeFile = removeFile;
 (window as unknown as { [key: string]: unknown }).clearAll = clearAll;
 (window as unknown as { [key: string]: unknown }).downloadJson = downloadJson;
+(window as unknown as { [key: string]: unknown }).handleDrop = handleDrop;
+(window as unknown as { [key: string]: unknown }).handleDragOver = handleDragOver;
+(window as unknown as { [key: string]: unknown }).handleDragLeave = handleDragLeave;
 
-// 导出初始化函数
+// 初始化
 export function initApp() {
   render();
 }
