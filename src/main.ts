@@ -172,7 +172,6 @@ function renderTechBackground() {
       <div class="particles">
         ${particles}
       </div>
-      <div class="scan-line"></div>
     </div>
   `;
 }

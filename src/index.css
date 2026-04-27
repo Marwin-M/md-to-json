@@ -125,61 +125,6 @@ body {
   50% { opacity: 0.4; transform: scaleX(1); }
 }
 
-/* 扫描线 - 带拖影效果 */
-.scan-line {
-  position: absolute;
-  width: 100%;
-  height: 100px;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(255, 215, 0, 0.1) 20%,
-    rgba(255, 215, 0, 0.3) 40%,
-    rgba(255, 215, 0, 0.6) 50%,
-    rgba(255, 215, 0, 0.3) 60%,
-    rgba(255, 215, 0, 0.1) 80%,
-    transparent 100%
-  );
-  animation: scan 4s linear infinite;
-  opacity: 0.4;
-  filter: blur(2px);
-}
-
-@keyframes scan {
-  0% { transform: translateY(-100px); }
-  100% { transform: translateY(calc(100vh + 100px)); }
-}
-
-/* 扫描线拖影伪元素 */
-.scan-line::before,
-.scan-line::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 60px;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(255, 215, 0, 0.15),
-    transparent
-  );
-  left: 0;
-}
-
-.scan-line::before {
-  top: -30px;
-  filter: blur(8px);
-}
-
-.scan-line::after {
-  bottom: -30px;
-  filter: blur(8px);
-}
-
-/* 主容器 */
-.container {
-  position: relative;
-  z-index: 1;
   max-width: 100vw;
   height: 100vh;
   padding: 1rem;
@@ -342,6 +287,10 @@ body {
 .drop-zone-content {
   text-align: center;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .drop-zone-content svg {
