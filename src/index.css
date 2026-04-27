@@ -468,9 +468,12 @@ body {
 
 /* 底部操作栏 */
 .action-bar {
+  margin-top: 1rem;
   padding: 1rem;
-  background: rgba(36, 36, 36, 0.8);
-  border-top: 1px solid var(--border-color);
+  background: rgba(26, 26, 26, 0.85);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   flex-shrink: 0;
@@ -632,6 +635,7 @@ body {
   }
 
   .action-bar {
+    margin-top: 0;
     flex-direction: column;
     padding: 0.5rem;
     gap: 0.5rem;
