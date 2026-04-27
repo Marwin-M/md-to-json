@@ -221,11 +221,11 @@ function render() {
 
     <div class="container">
       <header class="header">
-        <div class="header-content">
-          <div class="header-text">
-            <h1>MD 转 JSON</h1>
-            <p class="subtitle">机型数据转换工具</p>
-          </div>
+        <div class="header-text">
+          <h1>MD 转 JSON</h1>
+          <p class="subtitle">机型数据转换工具</p>
+        </div>
+        <div class="header-actions">
           <a
             href="https://github.com/matomo-org/device-detector?utm_source=chatgpt.com"
             target="_blank"
