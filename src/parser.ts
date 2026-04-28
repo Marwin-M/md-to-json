@@ -69,7 +69,7 @@ export function parseMdContent(content: string): PhoneModel[] {
       const code = modelMatch[1].trim();
       const fullName = modelMatch[2].trim();
       const alias = extractAliasFromName(fullName) || currentAlias;
-      const cleanName = removeAliasFromName(fullName);
+      const cleanName = cleanModelName(fullName);
 
       result.push({
         brand: currentBrand,
@@ -148,10 +148,19 @@ function extractAliasFromName(name: string): string | null {
 }
 
 /**
- * 从名称中移除别名
+ * 从名称中移除别名，并处理多个名称的情况（只保留第一个）
+ * 例如："荣耀畅玩 40 5G / 荣耀畅玩 40C 5G / 荣耀畅玩 40S 5G" → "荣耀畅玩 40 5G"
  */
-function removeAliasFromName(name: string): string {
-  return name.replace(/`[^`]+`\s*$/, '').replace(/\s*\([^)]+\)\s*$/, '').trim();
+function cleanModelName(name: string): string {
+  // 先移除别名
+  let result = name.replace(/`[^`]+`\s*$/, '').replace(/\s*\([^)]+\)\s*$/, '').trim();
+
+  // 如果有多个名称（用 "/" 分隔），只保留第一个
+  if (result.includes('/')) {
+    result = result.split('/')[0].trim();
+  }
+
+  return result;
 }
 
 /**
