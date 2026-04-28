@@ -239,7 +239,7 @@ function render() {
     <div class="container">
       <header class="header">
         <div class="header-text">
-          <h1><img class="logo" src="/logo.png" alt="logo" />MD 转 JSON</h1>
+          <h1><img class="logo" src="./logo.png" alt="logo" />MD 转 JSON</h1>
           <p class="subtitle">机型数据转换工具</p>
         </div>
         <div class="header-actions">
