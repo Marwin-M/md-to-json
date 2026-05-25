@@ -244,7 +244,7 @@ function render() {
         </div>
         <div class="header-actions">
           <a
-            href="https://github.com/matomo-org/device-detector?utm_source=chatgpt.com"
+            href="https://github.com/KHwang9883/MobileModels"
             target="_blank"
             rel="noopener noreferrer"
             class="btn-source"
