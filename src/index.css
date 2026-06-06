@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --neon-yellow: #ffd700;
-  --neon-yellow-light: #ffeb3b;
-  --neon-yellow-dark: #ffc107;
-  --neon-orange: #ff9800;
+  --neon-yellow: #00b4ff;
+  --neon-yellow-light: #40c8ff;
+  --neon-yellow-dark: #0099e6;
+  --neon-orange: #006bb3;
   --bg-dark: #0d0d0d;
   --bg-card: #1a1a1a;
   --bg-card-alt: #242424;
